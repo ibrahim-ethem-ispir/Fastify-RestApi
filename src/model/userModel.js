@@ -9,6 +9,11 @@ const userSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
+    isEmail:{
+        type:Boolean,
+        required:true,
+        default:false
+    },
     email: {
         type: String,
         required: true,

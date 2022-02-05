@@ -12,12 +12,14 @@
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.0.1",
+    "cookie": "^0.4.2",
     "dotenv": "^14.3.2",
     "fastify": "^3.27.0",
     "fastify-cookie": "^5.5.0",
     "fastify-cors": "^6.0.2",
     "fastify-session": "^5.2.1",
     "http-errors": "^2.0.0",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.1.8",
     "nodemon": "^2.0.15"
   }

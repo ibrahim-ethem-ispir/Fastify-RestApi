@@ -3,8 +3,8 @@ const dotenv = require("dotenv").config({ path: "./src/config/.env" });
 const port = process.env.PORT || 3003;
 const router = require("./src/router/authRouter");
 fastify.register(require("fastify-cors"));
-const fastifySession = require("fastify-session");
-const fastifyCookie = require("fastify-cookie");
+const session = require("fastify-session");
+const cookie = require("fastify-cookie");
 
 require("./src/config/database");
 fastify.get("/", async (req, reply) => {
@@ -12,13 +12,39 @@ fastify.get("/", async (req, reply) => {
 });
 
 // sessions
-fastify.register(fastifyCookie,{maxAge:60*60*1000});
-fastify.register(fastifySession, { secret: process.env.SESSION_SECRET_KEY });
+fastify.register(cookie)
+fastify.register(session, 
+  {secret: process.env.SESSION_SECRET_KEY,
+    saveUninitialized: true, 
+    cookie: {
+      secure:false, 
+      httpOnly: true,
+      sameSite: false, 
+      maxAge: 60 *60 * 24 * 1000
+    }
+})
+
+/*
+fastify.addHook('preHandler', (req, reply, next) => {
+  req.session.sessionData = ({userId: String, name: String, email: String, password: String, loggedOn: Date},{collection:"session"})
+    
+  next();
+})*/
+
+
+const messages = {
+  badRequestErrorMessage: 'Format is Authorization: Bearer [token]',
+  badCookieRequestErrorMessage: 'Cookie could not be parsed in request',
+  noAuthorizationInHeaderMessage: 'No Authorization was found in request.headers',
+  noAuthorizationInCookieMessage: 'No Authorization was found in request.cookies',
+  authorizationTokenExpiredMessage: 'Authorization token expired',
+  authorizationTokenInvalid: (err) => `Authorization token is invalid: ${err.message}`,
+  authorizationTokenUntrusted: 'Untrusted authorization token'
+}
 
 router.forEach((route, index) => {
   fastify.route(route);
 });
-
 const start = async () => {
   try {
     await fastify
